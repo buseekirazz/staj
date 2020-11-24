@@ -1,0 +1,318 @@
+<!--
+=========================================================
+* * Black Dashboard - v1.0.1
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/black-dashboard
+* Copyright 2019 Creative Tim (https://www.creative-tim.com)
+
+
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+-->
+<?php 
+include "../baglan.php";
+ob_start();
+session_start();
+$teklifsor=$db->prepare("SELECT * FROM teklif ");
+$teklifsor->execute(array());
+$teklifcek=$teklifsor->fetch(PDO::FETCH_ASSOC);
+
+$kullanicisor=$db->prepare("SELECT * FROM bayi_login where bayi_no=:bayi_no");
+$kullanicisor->execute(array(
+'bayi_no'=>$_SESSION['bayi_no']
+));
+$kullanicicek=$kullanicisor->fetch(PDO::FETCH_ASSOC);
+
+$adminsor=$db->prepare("SELECT * FROM admin ");
+$adminsor->execute(array());
+$admincek=$adminsor->fetch(PDO::FETCH_ASSOC);
+
+$mesajsor=$db->prepare("SELECT * FROM tickets ");
+$mesajsor->execute(array());
+$mesajcek=$mesajsor->fetch(PDO::FETCH_ASSOC);
+  
+
+
+$say=$kullanicisor->RowCount();
+$girissor=$db->prepare("SELECT * FROM admin where admin_name=:name");
+$girissor->execute(array(
+'admin_name'=>$_SESSION['admin_name']
+));
+$giriscek=$girissor->fetch(PDO::FETCH_ASSOC);
+
+
+$teklifsor2=$db->prepare("SELECT * from teklif where teklif_id=:id");
+$teklifsor2->execute(array(
+'id'=>$_GET['deneme']
+));
+$teklifcek2=$teklifsor2->fetch(PDO::FETCH_ASSOC);
+
+
+ ?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
+  <link rel="icon" type="image/png" href="../assets/img/favicon.png">
+  <title>
+    Softinyo | Admin Panel
+  </title>
+  <!--     Fonts and icons     -->
+  <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,600,700,800" rel="stylesheet" />
+  <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+  <!-- Nucleo Icons -->
+  <link href="../assets/css/nucleo-icons.css" rel="stylesheet" />
+  <!-- CSS Files -->
+  <link href="../assets/css/black-dashboard.css?v=1.0.0" rel="stylesheet" />
+  <!-- CSS Just for demo purpose, don't include it in your project -->
+  <link href="../assets/demo/demo.css" rel="stylesheet" />
+</head>
+
+<body class="">
+  <div class="wrapper">
+<?php include "asidebar.php"; ?>
+    <div class="main-panel">
+      <!-- Navbar -->
+     <?php include "anavbar.php"; ?>
+      <div class="modal modal-search fade" id="searchModal" tabindex="-1" role="dialog" aria-labelledby="searchModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="SEARCH">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <i class="tim-icons icon-simple-remove"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End Navbar -->
+      <div class="content">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card ">
+              <div class="card-header">
+                <h3 class="card-title">GELEN TÜM TEKLİFLER</h3>
+                
+              </div>
+      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Teklif Talep Paneli</h5>
+        <button type="button"  class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      
+    </div>
+  </div>
+</div>        
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table tablesorter " id="">
+                    <thead class=" text-primary">
+                      <tr>
+      <th>Sıra</th>
+      <th>Bayi İsmi</th>
+      <th>Teklif Konusu</th>
+      <th>Teklif Detayı</th>
+      <th>PDF</th>
+      <th></th>
+      <th>Mesaj</th>
+      <th>Sil</th>
+      <th>Güncelle</th>  
+                      </tr>
+                    </thead>
+                    <tbody>
+           <?php
+    
+    $bilgilerimsor=$db->prepare("SELECT * from teklif");
+    $bilgilerimsor->execute(
+    
+    );
+   
+   
+
+    $say=0;
+    while($bilgilerimcek=$bilgilerimsor->fetch(PDO::FETCH_ASSOC)) { $say++?>
+
+
+
+    <tr>
+      <td><?php echo $say; ?></td>
+      <td style="color:black"><?php echo $bilgilerimcek['bayi_ad'];?></td>
+         <td style="color:black"><?php echo $bilgilerimcek['teklif_konusu'];?></td>
+      
+      <td><textarea style="background-color: #27293d; color: white; padding: none;  " ><?php echo $bilgilerimcek['teklif_detay'];?></textarea></td>
+      
+
+
+      <td style="color:black"><a href="<?php echo $bilgilerimcek['pdf'].$_FILES['file']['name'];?>" target="_blank"><button class="btn btn-primary">PDF</button></a></td>
+      <td><input type="hidden"  name="teklif_id" value="<?php echo $bilgilerimcek['teklif_id'];  ?>"></td>
+
+      <td align="Center"> <a href="adminmesaj.php?deneme=<?php echo $bilgilerimcek ['teklif_id'];?>&deneme1=<?php echo $bilgilerimcek ['bayi_id'];?>"> <button class="btn btn-success">Mesaj Göster</button></a></td>
+
+      <td align="Center"> <a href="adminislem.php?teklif_id=<?php echo $bilgilerimcek['teklif_id'];?>&teklifsil=ok"> <button class="btn btn-danger">Sil</button></a></td>
+      <td align="Center"><a href="admindenguncelle.php?deneme=<?php echo $bilgilerimcek ['teklif_id'];?>&<?php echo $bilgilerimcek ['bayi_id'];?>"> <button class="btn btn-success">Güncelle</button></a></td>
+    </tr>
+
+    <?php } ?>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+ <?php include "../footer.php"; ?>
+    </div>
+  </div>
+<?php include "../degisiklik.php"; ?>
+  <!--   Core JS Files   -->
+  <script src="../assets/js/core/jquery.min.js"></script>
+  <script src="../assets/js/core/popper.min.js"></script>
+  <script src="../assets/js/core/bootstrap.min.js"></script>
+  <script src="../assets/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+  <!--  Google Maps Plugin    -->
+  <!-- Place this tag in your head or just before your close body tag. -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>
+  <!-- Chart JS -->
+  <script src="../assets/js/plugins/chartjs.min.js"></script>
+  <!--  Notifications Plugin    -->
+  <script src="../assets/js/plugins/bootstrap-notify.js"></script>
+  <!-- Control Center for Black Dashboard: parallax effects, scripts for the example pages etc -->
+  <script src="../assets/js/black-dashboard.min.js?v=1.0.0"></script><!-- Black Dashboard DEMO methods, don't include it in your project! -->
+  <script src="../assets/demo/demo.js"></script>
+  <script>
+    $(document).ready(function() {
+      $().ready(function() {
+        $sidebar = $('.sidebar');
+        $navbar = $('.navbar');
+        $main_panel = $('.main-panel');
+
+        $full_page = $('.full-page');
+
+        $sidebar_responsive = $('body > .navbar-collapse');
+        sidebar_mini_active = true;
+        white_color = false;
+
+        window_width = $(window).width();
+
+        fixed_plugin_open = $('.sidebar .sidebar-wrapper .nav li.active a p').html();
+
+
+
+        $('.fixed-plugin a').click(function(event) {
+          if ($(this).hasClass('switch-trigger')) {
+            if (event.stopPropagation) {
+              event.stopPropagation();
+            } else if (window.event) {
+              window.event.cancelBubble = true;
+            }
+          }
+        });
+
+        $('.fixed-plugin .background-color span').click(function() {
+          $(this).siblings().removeClass('active');
+          $(this).addClass('active');
+
+          var new_color = $(this).data('color');
+
+          if ($sidebar.length != 0) {
+            $sidebar.attr('data', new_color);
+          }
+
+          if ($main_panel.length != 0) {
+            $main_panel.attr('data', new_color);
+          }
+
+          if ($full_page.length != 0) {
+            $full_page.attr('filter-color', new_color);
+          }
+
+          if ($sidebar_responsive.length != 0) {
+            $sidebar_responsive.attr('data', new_color);
+          }
+        });
+
+        $('.switch-sidebar-mini input').on("switchChange.bootstrapSwitch", function() {
+          var $btn = $(this);
+
+          if (sidebar_mini_active == true) {
+            $('body').removeClass('sidebar-mini');
+            sidebar_mini_active = false;
+            blackDashboard.showSidebarMessage('Sidebar mini deactivated...');
+          } else {
+            $('body').addClass('sidebar-mini');
+            sidebar_mini_active = true;
+            blackDashboard.showSidebarMessage('Sidebar mini activated...');
+          }
+
+          // we simulate the window Resize so the charts will get updated in realtime.
+          var simulateWindowResize = setInterval(function() {
+            window.dispatchEvent(new Event('resize'));
+          }, 180);
+
+          // we stop the simulation of Window Resize after the animations are completed
+          setTimeout(function() {
+            clearInterval(simulateWindowResize);
+          }, 1000);
+        });
+
+        $('.switch-change-color input').on("switchChange.bootstrapSwitch", function() {
+          var $btn = $(this);
+
+          if (white_color == true) {
+
+            $('body').addClass('change-background');
+            setTimeout(function() {
+              $('body').removeClass('change-background');
+              $('body').removeClass('white-content');
+            }, 900);
+            white_color = false;
+          } else {
+
+            $('body').addClass('change-background');
+            setTimeout(function() {
+              $('body').removeClass('change-background');
+              $('body').addClass('white-content');
+            }, 900);
+
+            white_color = true;
+          }
+
+
+        });
+
+        $('.light-badge').click(function() {
+          $('body').addClass('white-content');
+        });
+
+        $('.dark-badge').click(function() {
+          $('body').removeClass('white-content');
+        });
+      });
+    });
+  </script>
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS &&
+      TrackJS.install({
+        token: "ee6fab19c5a04ac1a32a645abde4613a",
+        application: "black-dashboard-free"
+      });
+  </script>
+</body>
+
+</html>

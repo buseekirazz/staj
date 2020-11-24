@@ -1,0 +1,5 @@
+RewriteEngine on
+ 
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond $1 !^(css|js|images|inc|lang)
+RewriteRule ^([0-9a-zA-Z-_]+)/([0-9]+)$  mesaj.php?sef=$1&id=$2 [L,QSA]
